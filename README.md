@@ -3,20 +3,21 @@
 Este repositório contém um sistema para gerenciar doenças, seus patógenos associados e sintomas, além de gerar relatórios baseados nesses dados. O sistema utiliza consultas SQL integrado a uma API para interagir com o banco de dados e permite o cadastro e a recuperação de informações relacionadas a doenças, sintomas e patógenos.
 
 ## Configurações de uso
+O programa foi desenvolvido utilizando Python 3.12.3, em caso de conflitos de dependências, certifique-se de que esta versão está instalada em seu computador e depois volte à seguir a documentação.
 
-Antes de utilizar o sistema, certifique-se de que você tem as bibliotecas necessárias instaladas. As principais dependências incluem uma biblioteca para conexão com o banco de dados (como sqlite3) e uma para geração de PDFs (como reportlab). Para instalá-las, execute:
+Antes de utilizar o sistema, certifique-se de que você tem as bibliotecas necessárias instaladas. As principais dependências incluem uma biblioteca para conexão com o banco de dados , ou seja, o módulo mariadb e uma para geração de PDFs o módulo reportlab. Para instalá-las junto à outras dependências execute:
 
-```dart
-    pip install reportlab
+```
+    pip install -r requirements.txt
 ```
 
 ### Configuração do Banco de Dados
 
-O código faz referência a uma conexão de banco de dados através do módulo conexao_db. Certifique-se de que o arquivo conexao_db.py esteja configurado corretamente e forneça uma conexão válida com o banco de dados.
+O código faz referência a uma conexão de banco de dados através do módulo `conexao_db`, que usa as funções criadas em `config_db`. Certifique-se de que o arquivo conexao_db.py esteja configurado corretamente e forneça uma conexão válida com o banco de dados.
 
 ### Execução do Código
 
-Salve o Código: Salve o código fornecido em um arquivo com a extensão .py, por exemplo, sistema_doencas.py.
+Salve o Código: Salve o código fornecido em um arquivo com a extensão .py, por exemplo, `sistema_doencas.py`.
 
 ### Execute o Código:
 
@@ -24,7 +25,7 @@ Abra um terminal ou prompt de comando.
 Navegue até o diretório onde o arquivo Python está salvo.
 Execute o código com o seguinte comando:
 
-```dart
+```
     python sistema_doencas.py
 ```
 
@@ -40,8 +41,8 @@ Execute o código com o seguinte comando:
 ## Requisitos
 
 - Python 3.x
-- SQLite3
-- Bibliotecas: reportlab
+- Mariadb
+- Injeção de dependências pelo requirements.txt
 
 ## Colaboradores
 

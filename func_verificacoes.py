@@ -16,6 +16,12 @@ def verificar_patogeno(cursor, nome_patogeno):
     count = cursor.fetchone()[0]
     return count > 0
 
+# Verifica se o popular já existe a partir de seu nome
+def verificar_nome_popular(cursor, nome_popular):
+    cursor.execute('SELECT COUNT(*) FROM NomesPopulares WHERE nomes_populares = ?', [nome_popular])
+    count = cursor.fetchone()[0]
+    return count > 0
+
 # Verifica se o tipo de patógeno já existe a partir de seu nome
 def verificar_tipo_patogeno(cursor, tipo_patogeno):
     cursor.execute('SELECT COUNT(*) FROM TipoDePatogeno WHERE tipo = ?', [tipo_patogeno])

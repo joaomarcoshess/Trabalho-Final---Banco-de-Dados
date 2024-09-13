@@ -13,94 +13,106 @@ import io
 def cadastrar_doenca(cursor, cid, nome_tecnico, patogeno_id):
   cursor.execute('INSERT INTO Doenca (nome, cid, patogeno_id) VALUES (?, ?, ?)', [nome_tecnico, cid, patogeno_id])
   doenca_id = cursor.lastrowid # Obtém o ID da doença cadastrada (AUTO_INCREMENT)
+  cursor.connection.commit()
   return doenca_id
 
 # Tem que verificar antes se doença_id é válido
 def cadastrar_nome_popular(cursor, nome_popular, doenca_id):
     cursor.execute('INSERT INTO NomesPopulares (nomes_populares, doenca_id) VALUES (?, ?)', (nome_popular, doenca_id))
+    cursor.connection.commit()
+
 
 # Tem antes que verificar se a doença_id e sintoma_id são validos
 def inserir_taxa_ocorrencia(cursor, doenca_id, sintoma_id, nivel_ocorrencia):
     cursor.execute('INSERT INTO TaxaDeOcorrencia (doenca_id, sintoma_id, nivel_ocorrencia) VALUES (?, ?, ?)', [doenca_id, sintoma_id, nivel_ocorrencia])
-    
+    cursor.connection.commit()
+
+
 # Retorna o id de um sintoma a partir de seu nome
 def obter_id_sintoma(cursor, nome_sintoma):
     cursor.execute('SELECT id FROM Sintoma WHERE nome = ?', [nome_sintoma])
     resultado = cursor.fetchone()
+    cursor.connection.commit()
     return resultado[0]
 
 # Retorna o id de um patógeno a partir de seu nome
 def obter_id_patogeno(cursor, nome_patogeno):
     cursor.execute('SELECT id FROM Patogeno WHERE nome_cientifico = ?', [nome_patogeno])
     resultado = cursor.fetchone()
+    cursor.connection.commit()
     return resultado[0]
 
 # Retorna o id de um tipo de patógeno a partir de seu nome
 def obter_id_tipo_patogeno(cursor, tipo_patogeno):
     cursor.execute('SELECT id FROM TipoDePatogeno WHERE tipo = ?', [tipo_patogeno])
     resultado = cursor.fetchone()
+    cursor.connection.commit()
     return resultado[0]
 
 # Tem que verificar se o sintoma ja existe antes de chamar essa função
 def cadastrar_sintoma(cursor, sintoma):
-  cursor.execute('INSERT INTO Sintoma (nome) VALUES (?)', [sintoma])
+    cursor.execute('INSERT INTO Sintoma (nome) VALUES (?)', [sintoma])
+    cursor.connection.commit()
 
 # Tem que verificar se o patogeno ja existe antes de chamar essa função
 def cadastrar_patogeno(cursor, patogeno, tipoPatogenoId):
-  cursor.execute('INSERT INTO Patogeno (nome_cientifico, tipopatogeno_id) VALUES (?, ?)', [patogeno, tipoPatogenoId])
+    cursor.execute('INSERT INTO Patogeno (nome_cientifico, tipopatogeno_id) VALUES (?, ?)', [patogeno, tipoPatogenoId])
+    cursor.connection.commit()
 
 # Tem que verificar se o tipo de patogeno ja existe antes de chamar essa função
 def cadastrar_tipo_patogeno(cursor, tipo_patogeno):
-  cursor.execute('INSERT INTO TipoDePatogeno (tipo) VALUES (?)', [tipo_patogeno])
-  tipo_patogeno_id = cursor.lastrowid # Obtém o ID do tipo de patogeno cadastrado (AUTO_INCREMENT)
-  return tipo_patogeno_id
+    cursor.execute('INSERT INTO TipoDePatogeno (tipo) VALUES (?)', [tipo_patogeno])
+    tipo_patogeno_id = cursor.lastrowid # Obtém o ID do tipo de patogeno cadastrado (AUTO_INCREMENT)
+    cursor.connection.commit()
+    return tipo_patogeno_id
 
 def consulta_doenca(cursor, indice_escolhido, dado):
-  colunas = ['CID', 'nome', 'nome_popular', 'patogeno_id']
-  if(indice_escolhido != 2):
-    cursor.execute('select * from doenca ? = ?', [colunas[indice_escolhido], dado])
-  else:
-    cursor.execute('select * from doenca join nomespopulares on doenca.id = nomespopulares.doenca_id where nomespopulares.nomes_populares = ?', [dado])
-  consulta = cursor.fetchall()
-  return {'id:':consulta[0][0],
-  'nome:':consulta[0][1],
-  'CID:':consulta[0][2],
-  'Nome popular:':consulta[0][-2]}
+    colunas = ['CID', 'nome', 'nome_popular', 'patogeno_id']
+    if(indice_escolhido != 2):
+        cursor.execute('select * from doenca ? = ?', [colunas[indice_escolhido], dado])
+    else:
+        cursor.execute('select * from doenca join nomespopulares on doenca.id = nomespopulares.doenca_id where nomespopulares.nomes_populares = ?', [dado])
+        consulta = cursor.fetchall()
+        return {'id:':consulta[0][0],
+        'nome:':consulta[0][1],
+        'CID:':consulta[0][2],
+        'Nome popular:':consulta[0][-2]}
 
 
 def Consultas_por_opcao(cursor, indice_escolhido, dado):
-    if dado == 1:
+    print(indice_escolhido == "1")
+    if indice_escolhido == "1":
         cursor.execute(f'''
             SELECT d.id
             FROM Doenca AS d
             JOIN NomesPopulares AS np ON d.id = np.doenca_id
             WHERE np.nomes_populares = ?
-        ''', dado)
-        doenca_id = cursor.fetchall()[0]
-
-    elif dado == '2':
+        ''', (dado,))
+        doenca_id = cursor.fetchall()[0][0]
+    elif indice_escolhido == "2":
         cursor.execute(f'''
             SELECT d.id
             FROM Doenca AS d
             WHERE d.nome = ?
-        ''', dado)
-        doenca_id = cursor.fetchall()[0]
+        ''', (dado,))
+        doenca_id = cursor.fetchall()[0][0]
 
-    elif dado == '3':
+    elif indice_escolhido == "3":
         cursor.execute(f'''
             SELECT d.id
             FROM Doenca AS d
             WHERE d.cid = ?
-        ''', dado)
-        doenca_id = cursor.fetchall()[0]
+        ''', (dado,))
+        doenca_id = cursor.fetchall()[0][0]
 
-    elif dado == '4':
+    elif indice_escolhido == "4":
         cursor.execute(f'''
             SELECT d.id
             FROM Doenca AS d
-            WHERE d.patogeno_id = ?
-        ''', dado)
-        doenca_id = cursor.fetchall()[0]
+            JOIN Patogeno AS p ON d.patogeno_id = p.id
+            WHERE p.nome_cientifico = ?
+        ''', (dado,))
+        doenca_id = cursor.fetchall()[0][0]
 
     obter_dados_doenca(cursor, doenca_id)
 
@@ -382,12 +394,10 @@ def listar_doencas(cursor, sintomas_id):
         print(f"\nDoenças na página {pagina_atual}:")
         for i in range(inicio, fim):
             if i < len(doencas):
-                # doenca = dict(doencas[i])
                 doenca = list(doencas[i])
-                print(doenca)
                 print(f"{i + 1} - Nome: {doenca[1]}")
 
-        opcao=input("Escolha uma opção:\n [1] -> Selecionar página.\n[2] -> Selecionar Doença\n[3] -> Retornar para o menu")
+        opcao=input("Escolha uma opção:\n [1] -> Selecionar página.\n[2] -> Selecionar Doença\n[3] -> Retornar para o menu\n")
         
         if opcao == "1":
             pagina_atual=int(input(f"Digite o número da página entre 1 e {total_paginas}: "))
@@ -410,8 +420,8 @@ def listar_doencas(cursor, sintomas_id):
                 obter_dados_doenca(cursor, doenca[0])
 
         elif opcao == "3":
-            registrar_operacao("--Retornando ao Menu--",None)
-            False
+            # registrar_operacao("--Retornando ao Menu--",None)
+            # False
             break            
 
         else:

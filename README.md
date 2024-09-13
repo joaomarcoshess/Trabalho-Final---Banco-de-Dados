@@ -9,6 +9,25 @@ Antes de utilizar o sistema, certifique-se de que você tem as bibliotecas neces
 ```dart
     pip install reportlab
 ```
+
+### Configuração do Banco de Dados
+
+O código faz referência a uma conexão de banco de dados através do módulo conexao_db. Certifique-se de que o arquivo conexao_db.py esteja configurado corretamente e forneça uma conexão válida com o banco de dados.
+
+### Execução do Código
+
+Salve o Código: Salve o código fornecido em um arquivo com a extensão .py, por exemplo, sistema_doencas.py.
+
+### Execute o Código:
+
+Abra um terminal ou prompt de comando.
+Navegue até o diretório onde o arquivo Python está salvo.
+Execute o código com o seguinte comando:
+
+```dart
+    python sistema_doencas.py
+```
+
 ## Funcionalidades
 
 - **Listar Doenças**: Exibe todas as doenças cadastradas no banco de dados.

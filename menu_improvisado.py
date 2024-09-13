@@ -43,6 +43,8 @@ def Insert_dados_doenca(cursor):
         if not verificar_patogeno(cursor,patogeno):
             cadastrar_patogeno(cursor,patogeno,tipo_patogeno_id)
         patogeno_id=obter_id_patogeno(cursor, patogeno)
+        
+        op=''
 
         while op.lower() != 'n':
             sintoma = input("Digite o sintoma: ")
@@ -58,11 +60,12 @@ def Insert_dados_doenca(cursor):
             op=input('Deseja cadastrar mais? (Y/n): ')
 
         op=''
-        
-        while op.lower() != 'n':
-            nome_popular = input("Digite o nome popular: ")
-            op=input('Deseja cadastrar mais? (Y/n): ')
-            nomes_populares.append(nome_popular)
+        aux=input("Deseja selecionar nome popular para a doença? (S/n)").lower()
+        if aux == 's':
+            while op.lower() != 'n':
+                nome_popular = input("Digite o nome popular: ")
+                op=input('Deseja cadastrar mais? (Y/n): ')
+                nomes_populares.append(nome_popular)
 
         dados = f"CID: {cid} Nome Técnico: {nome_tecnico} \nNome Popular: {nomes_populares} \nPatógeno: {patogeno} \nSintomas: {sintomas}"
 
@@ -124,27 +127,63 @@ def Emissao_de_relatorios(cursor):
 def Pesquisa_Doencas(cursor):
     while True:
         limpar_tela()
-        opcao=input("PESQUISA DE DOENÇAS\n [1] -> Nome Popular\n[2] -> Nome técnico\n[3] -> CID\n[4] -> Patogeno\n[5] -> SAIR\n OPÇÂO")
+        opcao=input("PESQUISA DE DOENÇAS\n [1] -> Nome Popular\n[2] -> Nome técnico\n[3] -> CID\n[4] -> Patogeno\n[5] -> SAIR\n")
+
         if opcao == "1":
             Nome_popular=input("Digite um Nome popular: ")
-            Consultas_por_opcao(cursor,opcao,Nome_popular)
-            dados=f"\nNome-Popular: {Nome_popular}"
-            registrar_operacao("Pesquisar Doença",dados)
+
+            if(verificar_nome_popular(cursor, Nome_popular)):
+                Consultas_por_opcao(cursor,opcao,Nome_popular)
+                dados=f"\nNome-Popular: {Nome_popular}"
+                registrar_operacao("Pesquisar Doença",dados)
+            else:
+                print("Nome Popular não encontrado.")
+                input("\nPressione Enter para continuar...")  # Pausa para leitura
+                limpar_tela()
+
         elif opcao == "2":
             Nome_Tecnico=input("Digite o Nome técnico: ")
-            Consultas_por_opcao(cursor,opcao,Nome_Tecnico)
-            dados=f"\nNome-Popular: {Nome_Tecnico}"
-            registrar_operacao("Pesquisar Doença",dados)
+
+            if(verificar_doenca(cursor, Nome_Tecnico)):
+                Consultas_por_opcao(cursor,opcao,Nome_Tecnico)
+                dados=f"\nNome-Popular: {Nome_Tecnico}"
+                registrar_operacao("Pesquisar Doença",dados)
+            else:
+                print("Nome Técnico não encontrado.")
+                input("\nPressione Enter para continuar...")  # Pausa para leitura
+                limpar_tela()
+
         elif opcao == "3":
             CID=input("Digite o CID da Doença: ")
-            Consultas_por_opcao(cursor,opcao,CID)
-            dados=f"\nNome-Popular: {CID}"
-            registrar_operacao("Pesquisar Doença",dados)
+            
+            if(verificar_cid_existe(cursor, CID)):
+                Consultas_por_opcao(cursor,opcao,CID)
+                dados=f"\nNome-Popular: {CID}"
+                registrar_operacao("Pesquisar Doença",dados)
+            else:
+                print("CID não encontrado.")
+                input("\nPressione Enter para continuar...")  # Pausa para leitura
+                limpar_tela()
+
         elif opcao == "4":
             Patogeno=input("Digite o Patogeno: ")
-            Consultas_por_opcao(cursor,opcao,Patogeno)
-            dados=f"\nNome-Popular: {Patogeno}"
-            registrar_operacao("Pesquisar Doença",dados)
+
+            if(verificar_patogeno(cursor, Patogeno)):
+                Consultas_por_opcao(cursor,opcao,Patogeno)
+                dados=f"\nNome-Popular: {Patogeno}"
+                registrar_operacao("Pesquisar Doença",dados)
+            else:
+                print("Patogeno não encontrado.")
+                input("\nPressione Enter para continuar...")  # Pausa para leitura
+                limpar_tela()
+        
+        elif opcao == "5":
+            break
+
+        else:
+            print("Opção inválida. Tente novamente.")
+            input("\nPressione Enter para continuar...")  # Pausa para leitura
+            limpar_tela()
 
 def Apoio_Diagnostico(cursor):
      while True:
@@ -160,9 +199,10 @@ def Apoio_Diagnostico(cursor):
                 op=input('Deseja cadastrar mais? (Y/n): ')
             else:
                 print("SINTOMA NÃO CADASTRADO-TENTE NOVAMENTE")
-        listar_doencas(cursor,lista_sintomas_id)
         dados=f"\nSintomas: {lista_sintomas}"
         registrar_operacao("Apoio Diagnostico:", dados)
+        listar_doencas(cursor,lista_sintomas_id)
+        return
 
         
 def menu(crusor):
@@ -174,7 +214,7 @@ def menu(crusor):
         print("3. Apoio ao Diagnóstico")
         print("4. Emissao de relatorios")
         print("5. Sair")
-        opcao = input("Escolha uma opção (1-4): ")
+        opcao = input("Escolha uma opção (1-5): ")
         if opcao == "1":
             Insert_dados_doenca(cursor)
         elif opcao == "2":
